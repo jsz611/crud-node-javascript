@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const programmer = require("./src/database/tables/programmer");
-const syncDatabase = require("./syncDatabase");
+const database = require("./src/database/db");
 
 const app = express();
 const port = 5000;
@@ -12,11 +12,19 @@ app.listen(port, () => {
   console.log(`Now Listening on port ${port}`);
 });
 
+async function syncDatabase() {
+  try {
+    await database.sync();
+    console.log("Database successfully sync'ed");
+  } catch (error) {
+    console.error("Error syncing database:", error);
+  }
+}
+syncDatabase();
+
 app.get("/", (req, res) => {
   res.sendFile("index.html", { root: __dirname });
 });
-
-syncDatabase();
 
 app.post("/createProgrammer", async (req, res) => {
   try {
